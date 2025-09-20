@@ -46,6 +46,7 @@ use render_2d::*;
 
 pub(crate) mod render_3d;
 use render_3d::*;
+use crate::prelude::polygon_meter::NgonMeterData;
 
 /// Handler to shader containing shared functionality.
 pub const CORE_HANDLE: Handle<Shader> = weak_handle!("00000000-0000-0000-b766-25c7b7116e7a");
@@ -61,6 +62,9 @@ pub const LINE_HANDLE: Handle<Shader> = weak_handle!("00000000-0000-0000-bd87-2d
 
 /// Handler to shader for drawing regular polygons.
 pub const NGON_HANDLE: Handle<Shader> = weak_handle!("00000000-0000-0000-f167-5038026cdfbb");
+
+/// Handler to shader for drawing regular polygons.
+pub const NGON_METER_HANDLE: Handle<Shader> = weak_handle!("00000000-0000-0000-f167-5038026cdf00");
 
 /// Handler to shader for drawing rectangles.
 pub const RECT_HANDLE: Handle<Shader> = weak_handle!("00000000-0000-0000-d121-147b5fcad83f");
@@ -98,6 +102,14 @@ pub fn load_shaders(app: &mut App) {
         app,
         NGON_HANDLE,
         "shaders/shapes/ngon.wgsl",
+        Shader::from_wgsl_with_defs,
+        defs
+    );
+    let defs = NgonMeterData::shader_defs(app);
+    load_internal_asset!(
+        app,
+        NGON_METER_HANDLE,
+        "shaders/shapes/ngon-meter.wgsl",
         Shader::from_wgsl_with_defs,
         defs
     );

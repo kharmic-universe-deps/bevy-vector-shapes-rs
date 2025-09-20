@@ -15,6 +15,8 @@ mod regular_polygon;
 pub use regular_polygon::*;
 
 mod triangle;
+pub mod polygon_meter;
+
 pub use triangle::*;
 
 /// Component that holds data related to a shape to be used during rendering,

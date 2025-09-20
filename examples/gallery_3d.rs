@@ -1,6 +1,7 @@
 // Demonstrates each shape type with a selection of options and possible use cases
 
 #![allow(dead_code)]
+use bevy_vector_shapes::shapes::polygon_meter::PolygonMeterPainter;
 use std::{
     f32::consts::{PI, TAU},
     ops::Range,
@@ -251,31 +252,31 @@ pub fn gallery(mut painter: ShapePainter, seconds: f32, entries: Range<i32>) {
                 painter.hollow = true;
                 painter.set_color(PURPLE.pastel() * 0.6);
                 painter.translate(diag_vec);
-                painter.ngon(4., 0.8);
+                painter.ngon_meter(4., 0.8);
 
                 painter.roundness = 0.1;
                 painter.hollow = false;
                 painter.set_color(PURPLE.pastel() * 0.8);
                 painter.translate(-Vec3::X * 2.0);
-                painter.ngon(3., 0.8);
+                painter.ngon_meter(3., 0.8);
 
                 painter.hollow = true;
                 painter.set_color(PURPLE.pastel());
                 painter.translate(-Vec3::Y * 2.0);
-                painter.ngon(5., 0.8);
+                painter.ngon_meter(5., 0.8);
 
                 painter.roundness = 0.0;
                 painter.hollow = false;
                 painter.set_color(PURPLE.pastel() * 1.2);
                 painter.translate(Vec3::X * 2.0);
-                painter.ngon(6., 0.8);
+                painter.ngon_meter(6., 0.8);
             }
             9 => {
                 painter.hollow = true;
                 painter.thickness = 0.5;
                 painter.set_color(PURPLE.pastel());
                 painter.roundness = 0.5;
-                painter.ngon(3. + (seconds.sin() + 1.) * 3., 1.5);
+                painter.ngon_meter(3. + (seconds.sin() + 1.) * 3., 1.5);
             }
             14 => {
                 const HEX_RADIUS: f32 = 0.35;
@@ -291,7 +292,7 @@ pub fn gallery(mut painter: ShapePainter, seconds: f32, entries: Range<i32>) {
                         let ratio = 1.0 - f32::max(dist, 0.5) / BOUNDS;
                         painter.set_color(PURPLE.pastel());
                         painter.color.set_alpha(ratio);
-                        painter.ngon(sides, radius * f32::powf(ratio, 0.2) * 0.8);
+                        painter.ngon_meter(sides, radius * f32::powf(ratio, 0.2) * 0.8);
                     }
                 }
 

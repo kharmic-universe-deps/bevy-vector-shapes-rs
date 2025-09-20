@@ -48,6 +48,7 @@ use render::{ShapeRenderPlugin, ShapeType3dPlugin, ShapeTypePlugin};
 /// Structs and components used by the [`ShapePainter`], [`ShapeCommands`] and [`Canvas`] APIs.
 pub mod painter;
 use painter::*;
+use crate::shapes::polygon_meter::PolygonMeterComponent;
 
 /// `use bevy_vector_shapes::prelude::*` to import commonly used items.
 pub mod prelude {
@@ -95,6 +96,7 @@ impl Plugin for Shape2dPlugin {
             .add_plugins(ShapeTypePlugin::<DiscComponent>::default())
             .add_plugins(ShapeTypePlugin::<RectangleComponent>::default())
             .add_plugins(ShapeTypePlugin::<RegularPolygonComponent>::default())
+            .add_plugins(ShapeTypePlugin::<PolygonMeterComponent>::default())
             .add_plugins(ShapeTypePlugin::<TriangleComponent>::default());
     }
 }
@@ -138,6 +140,7 @@ impl Plugin for ShapePlugin {
             .add_plugins(ShapeType3dPlugin::<DiscComponent>::default())
             .add_plugins(ShapeType3dPlugin::<RectangleComponent>::default())
             .add_plugins(ShapeType3dPlugin::<RegularPolygonComponent>::default())
+            .add_plugins(ShapeTypePlugin::<PolygonMeterComponent>::default())
             .add_plugins(ShapeType3dPlugin::<TriangleComponent>::default());
     }
 }

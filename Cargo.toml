@@ -14,7 +14,7 @@ version = "0.10.0"
 
 [dependencies]
 any_vec = "0.14.0"
-bevy = { version = "0.16.0", default-features = false, features = [
+bevy = { git = "ssh://git@github.com/kharmic-universe-deps/bevy-rs.git", branch = "ku-0.1.0", default-features = false, features = [
   "bevy_core_pipeline",
   "bevy_pbr",
   "bevy_render",

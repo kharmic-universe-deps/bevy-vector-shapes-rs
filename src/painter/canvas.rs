@@ -220,7 +220,7 @@ pub trait CanvasCommands<'w> {
         &mut self,
         assets: &mut Assets<Image>,
         config: CanvasConfig,
-    ) -> (Handle<Image>, EntityCommands);
+    ) -> (Handle<Image>, EntityCommands<'_>);
 }
 
 impl<'w, 's> CanvasCommands<'w> for Commands<'w, 's> {
@@ -228,7 +228,7 @@ impl<'w, 's> CanvasCommands<'w> for Commands<'w, 's> {
         &mut self,
         assets: &mut Assets<Image>,
         config: CanvasConfig,
-    ) -> (Handle<Image>, EntityCommands) {
+    ) -> (Handle<Image>, EntityCommands<'_>) {
         let handle = Canvas::create_image(
             assets,
             config.width,

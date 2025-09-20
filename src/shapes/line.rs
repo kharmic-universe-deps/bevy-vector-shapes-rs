@@ -3,6 +3,8 @@ use bevy::{
     reflect::Reflect,
     render::render_resource::{ShaderRef, ShaderType},
 };
+use bevy::render::render_resource::encase::internal::{BufferMut, WriteInto, Writer};
+use bevy::render::render_resource::GpuArrayBufferable;
 use wgpu::vertex_attr_array;
 
 use crate::{
@@ -108,7 +110,6 @@ impl LineData {
         }
     }
 }
-
 impl ShapeData for LineData {
     type Component = LineComponent;
 
@@ -163,11 +164,11 @@ impl LineBundle for ShapeBundle<LineComponent> {
 
 /// Extension trait for [`ShapeSpawner`] to enable spawning of line entities.
 pub trait LineSpawner<'w>: ShapeSpawner<'w> {
-    fn line(&mut self, start: Vec3, end: Vec3) -> ShapeEntityCommands;
+    fn line(&mut self, start: Vec3, end: Vec3) -> ShapeEntityCommands<'_,'_>;
 }
 
 impl<'w, T: ShapeSpawner<'w>> LineSpawner<'w> for T {
-    fn line(&mut self, start: Vec3, end: Vec3) -> ShapeEntityCommands {
+    fn line(&mut self, start: Vec3, end: Vec3) -> ShapeEntityCommands<'_,'_> {
         self.spawn_shape(ShapeBundle::line(self.config(), start, end))
     }
 }

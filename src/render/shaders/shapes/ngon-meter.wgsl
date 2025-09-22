@@ -44,10 +44,9 @@ struct VertexOutput {
     @location(5) roundness: f32,
     @location(6) start_angle: f32,
     @location(7) end_angle: f32,
-    @location(8) rotation: f32,
-    @location(9) percent: f32,
+    @location(8) percent: f32,
 #ifdef TEXTURED
-    @location(10) texture_uv: vec2<f32>,
+    @location(9) texture_uv: vec2<f32>,
 #endif
 };
 
@@ -98,6 +97,10 @@ fn vertex(v: Vertex) -> VertexOutput {
     // Precalculate our scaling by the inverse of roundness for our sdf
     out.half_side_length = half_side_length / unit_apothem * (1.0 - out.roundness);
 
+    out.start_angle = shape.start_angle;
+    out.end_angle = shape.end_angle;
+    out.percent = shape.percent;
+    out.uv = core::rotate_vec_a(out.uv, shape.rotation);
     out.color = shape.color;
 #ifdef TEXTURED
     out.texture_uv = core::get_texture_uv(vertex.xy);
@@ -114,10 +117,9 @@ struct FragmentInput {
     @location(5) roundness: f32,
     @location(6) start_angle: f32,
     @location(7) end_angle: f32,
-    @location(8) rotation: f32,
-    @location(9) percent: f32,
+    @location(8) percent: f32,
 #ifdef TEXTURED
-    @location(10) texture_uv: vec2<f32>,
+    @location(9) texture_uv: vec2<f32>,
 #endif
 };
 
@@ -161,6 +163,12 @@ fn fragment(f: FragmentInput) -> @location(0) vec4<f32> {
 
     // Cut off points outside the shape or within the hollow area
     in_shape *= core::step_aa(-f.thickness, dist) * core::step_aa(dist, 0.);
+
+    var angle = atan2(f.uv.y, f.uv.x);
+    var a1 = f.start_angle;
+    var delta = abs(f.end_angle - f.start_angle);
+    var a2 = f.start_angle + (delta * f.percent);
+    in_shape *= core::step_aa_pd(a1, angle, abs(angle)) * core::step_aa_pd(angle, a2, abs(angle));
 
     var color = core::color_output(vec4<f32>(f.color.rgb, in_shape));
 #ifdef TEXTURED

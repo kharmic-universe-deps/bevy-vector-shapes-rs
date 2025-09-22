@@ -8,6 +8,7 @@ use std::{
 };
 
 use bevy::{color::palettes::css::*, prelude::*, render::view::RenderLayers};
+use bevy::prelude::ops::{abs};
 use bevy_vector_shapes::prelude::*;
 
 pub trait Pastel {
@@ -252,31 +253,115 @@ pub fn gallery(mut painter: ShapePainter, seconds: f32, entries: Range<i32>) {
                 painter.hollow = true;
                 painter.set_color(PURPLE.pastel() * 0.6);
                 painter.translate(diag_vec);
-                painter.ngon_meter(4., 0.8);
+                painter.ngon_meter(6., 0.8, PI * -24.0 / 24.0, PI * 24.0 / 24.0, 0.0, 1.0);
 
                 painter.roundness = 0.1;
                 painter.hollow = false;
                 painter.set_color(PURPLE.pastel() * 0.8);
                 painter.translate(-Vec3::X * 2.0);
-                painter.ngon_meter(3., 0.8);
+                painter.ngon_meter(
+                    6.,
+                    0.8,
+                    PI * -24.0 / 24.0,
+                    PI * 0.0 / 24.0,
+                    PI * 4.0 / 24.0,
+                    1.0,
+                );
 
                 painter.hollow = true;
                 painter.set_color(PURPLE.pastel());
                 painter.translate(-Vec3::Y * 2.0);
-                painter.ngon_meter(5., 0.8);
+                painter.ngon_meter(
+                    6.,
+                    0.8,
+                    PI * 0.0 / 24.0,
+                    PI * 24.0 / 24.0,
+                    PI * 4.0 / 24.0,
+                    1.0,
+                );
 
-                painter.roundness = 0.0;
-                painter.hollow = false;
+                //painter.roundness = 0.5;
+                painter.thickness = 0.1;
+                painter.hollow = true;
                 painter.set_color(PURPLE.pastel() * 1.2);
                 painter.translate(Vec3::X * 2.0);
-                painter.ngon_meter(6., 0.8);
+                painter.ngon_meter(
+                    6.,
+                    0.8,
+                    PI * -24.0 / 24.0,
+                    PI * 16.0 / 24.0,
+                    PI * 8.0 / 24.0,
+                    0.50,
+                );
             }
             9 => {
+
+                let percent = abs(seconds.sin());
                 painter.hollow = true;
-                painter.thickness = 0.5;
-                painter.set_color(PURPLE.pastel());
-                painter.roundness = 0.5;
-                painter.ngon_meter(3. + (seconds.sin() + 1.) * 3., 1.5);
+                painter.thickness = 0.12;
+                painter.set_color(BLUE.pastel());
+                //painter.roundness = 0.5;
+                painter.ngon_meter(
+                    6.0,
+                    1.,
+                    PI * -24.0 / 24.0,
+                    PI * 24.0 / 24.0,
+                    PI * 8.0 / 24.0,
+                    1.0,
+                );
+                painter.thickness = 0.1;
+                painter.set_color(DARK_GRAY);
+                //painter.roundness = 0.5;
+                painter.ngon_meter(
+                    6.0,
+                    0.8,
+                    PI * -24.0 / 24.0,
+                    PI * 24.0 / 24.0,
+                    PI * 8.0 / 24.0,
+                    1.0,
+                );
+                painter.thickness = 0.1;
+                painter.set_color(SEA_GREEN.pastel() * (1.0 / (0.8 + (1.0 - percent) * 0.6)));
+                //painter.roundness = 0.5;
+                painter.ngon_meter(
+                    6.0,
+                    0.8,
+                    PI * -24.0 / 24.0,
+                    PI * 16.0 / 24.0,
+                    PI * 8.0 / 24.0,
+                    percent,
+                );
+                painter.hollow = false;
+                painter.set_color(MIDNIGHT_BLUE.pastel());
+
+                let rot1 = PI * 16.0 / 24.0;
+                let rot2 = PI * 8.0 / 24.0;
+                let (pc1, pc2) = if percent < 0.50 {
+                    (percent * 2.0, 0.0)
+                } else {
+                    (1.0, (percent - 0.5) * 2.0)
+                };
+                painter.ngon_meter(
+                    6.0,
+                    0.7,
+                    PI * -20.0 / 24.0,
+                    PI * 4.0 / 24.0,
+                    rot1,
+                    pc1,
+                );
+
+                if pc2 > 0.0 {
+                    painter.ngon_meter(
+                        6.0,
+                        0.7,
+                        PI * -4.0 / 24.0,
+                        PI * 20.0 / 24.0,
+                        rot2,
+                        pc2,
+                    );
+                }
+
+
             }
             14 => {
                 const HEX_RADIUS: f32 = 0.35;
@@ -292,7 +377,14 @@ pub fn gallery(mut painter: ShapePainter, seconds: f32, entries: Range<i32>) {
                         let ratio = 1.0 - f32::max(dist, 0.5) / BOUNDS;
                         painter.set_color(PURPLE.pastel());
                         painter.color.set_alpha(ratio);
-                        painter.ngon_meter(sides, radius * f32::powf(ratio, 0.2) * 0.8);
+                        painter.ngon_meter(
+                            sides,
+                            radius * f32::powf(ratio, 0.2) * 0.8,
+                            PI * -24.0 / 24.0,
+                            PI * 24.0 / 24.0,
+                            0.0,
+                            1.0,
+                        );
                     }
                 }
 

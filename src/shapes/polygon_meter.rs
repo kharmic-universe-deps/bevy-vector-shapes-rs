@@ -5,11 +5,11 @@ use bevy::{
 };
 use wgpu::vertex_attr_array;
 
+use crate::render::NGON_METER_HANDLE;
 use crate::{
     prelude::*,
     render::{Flags, ShapeComponent, ShapeData, NGON_HANDLE},
 };
-use crate::render::NGON_METER_HANDLE;
 
 /// Component containing the data for drawing a regular polygon.
 #[derive(Component, Reflect)]
@@ -35,7 +35,15 @@ pub struct PolygonMeterComponent {
 }
 
 impl PolygonMeterComponent {
-    pub fn new(config: &ShapeConfig, sides: f32, radius: f32) -> Self {
+    pub fn new(
+        config: &ShapeConfig,
+        sides: f32,
+        radius: f32,
+        start_angle: f32,
+        end_angle: f32,
+        rotation: f32,
+        percent: f32,
+    ) -> Self {
         Self {
             color: config.color,
             thickness: config.thickness,
@@ -46,10 +54,10 @@ impl PolygonMeterComponent {
             sides,
             radius,
             roundness: config.roundness,
-            start_angle: 0.0,
-            end_angle: 0.0,
-            rotation: 0.0,
-            percent: 0.0,
+            start_angle,
+            end_angle,
+            rotation,
+            percent,
         }
     }
 }
@@ -101,11 +109,11 @@ impl Default for PolygonMeterComponent {
             sides: 3.0,
             radius: 1.0,
             roundness: 0.0,
-            
+
             start_angle: 0.0,
             end_angle: 0.0,
             rotation: 0.0,
-            
+
             percent: 0.0,
         }
     }
@@ -117,25 +125,33 @@ impl Default for PolygonMeterComponent {
 pub struct NgonMeterData {
     transform: [[f32; 4]; 4],
 
-    color: [f32; 4], 
-    thickness: f32,  
-    flags: u32,      
+    color: [f32; 4],
+    thickness: f32,
+    flags: u32,
 
-    sides: f32,      
-    radius: f32,     
-    roundness: f32,  
+    sides: f32,
+    radius: f32,
+    roundness: f32,
 
     start_angle: f32,
-    end_angle: f32,  
-    rotation: f32,   
+    end_angle: f32,
+    rotation: f32,
 
-    percent: f32,    
+    percent: f32,
 
     padding: [f32; 3],
 }
 
 impl NgonMeterData {
-    pub fn new(config: &ShapeConfig, sides: f32, radius: f32) -> NgonMeterData {
+    pub fn new(
+        config: &ShapeConfig,
+        sides: f32,
+        radius: f32,
+        start_angle: f32,
+        end_angle: f32,
+        rotation: f32,
+        percent: f32,
+    ) -> NgonMeterData {
         let mut flags = Flags(0);
         flags.set_thickness_type(config.thickness_type);
         flags.set_alignment(config.alignment);
@@ -152,10 +168,11 @@ impl NgonMeterData {
             radius,
             roundness: config.roundness,
 
-            start_angle: 0.0,
-            end_angle: 0.0,
-            rotation: 0.0,
-            percent: 0.0,
+            start_angle,
+            end_angle,
+            rotation,
+            percent,
+
             padding: default(),
         }
     }
@@ -174,15 +191,15 @@ impl ShapeData for NgonMeterData {
             4 => Float32x4,
             5 => Float32,
             6 => Uint32,
-            
+
             7 => Float32,
             8 => Float32,
             9 => Float32,
-            
+
             10 => Float32,
             11 => Float32,
             12 => Float32,
-            
+
             13 => Float32,
         ]
         .to_vec()
@@ -199,33 +216,108 @@ impl ShapeData for NgonMeterData {
 
 /// Extension trait for [`ShapePainter`] to enable it to draw regular polygons.
 pub trait PolygonMeterPainter {
-    fn ngon_meter(&mut self, sides: f32, radius: f32) -> &mut Self;
+    fn ngon_meter(
+        &mut self,
+        sides: f32,
+        radius: f32,
+        start_angle: f32,
+        end_angle: f32,
+        rotation: f32,
+        percent: f32,
+    ) -> &mut Self;
 }
 
 impl<'w, 's> PolygonMeterPainter for ShapePainter<'w, 's> {
-    fn ngon_meter(&mut self, sides: f32, radius: f32) -> &mut Self {
-        self.send(NgonMeterData::new(self.config(), sides, radius))
+    fn ngon_meter(
+        &mut self,
+        sides: f32,
+        radius: f32,
+        start_angle: f32,
+        end_angle: f32,
+        rotation: f32,
+        percent: f32,
+    ) -> &mut Self {
+        self.send(NgonMeterData::new(
+            self.config(),
+            sides,
+            radius,
+            start_angle,
+            end_angle,
+            rotation,
+            percent,
+        ))
     }
 }
 
 /// Extension trait for [`ShapeBundle`] to enable creation of regular polygon bundles.
 pub trait PolygonMeterBundle {
-    fn ngon_meter(config: &ShapeConfig, sides: f32, radius: f32) -> Self;
+    fn ngon_meter(
+        config: &ShapeConfig,
+        sides: f32,
+        radius: f32,
+        start_angle: f32,
+        end_angle: f32,
+        rotation: f32,
+        percent: f32,
+    ) -> Self;
 }
 
 impl PolygonMeterBundle for ShapeBundle<PolygonMeterComponent> {
-    fn ngon_meter(config: &ShapeConfig, sides: f32, radius: f32) -> Self {
-        Self::new(config, PolygonMeterComponent::new(config, sides, radius))
+    fn ngon_meter(
+        config: &ShapeConfig,
+        sides: f32,
+        radius: f32,
+        start_angle: f32,
+        end_angle: f32,
+        rotation: f32,
+        percent: f32,
+    ) -> Self {
+        Self::new(
+            config,
+            PolygonMeterComponent::new(
+                config,
+                sides,
+                radius,
+                start_angle,
+                end_angle,
+                rotation,
+                percent,
+            ),
+        )
     }
 }
 
 /// Extension trait for [`ShapeSpawner`] to enable spawning of regular polygon entities.
 pub trait PolygonMeterSpawner<'w> {
-    fn ngon_meter(&mut self, sides: f32, radius: f32) -> ShapeEntityCommands<'_,'_>;
+    fn ngon_meter(
+        &mut self,
+        sides: f32,
+        radius: f32,
+        start_angle: f32,
+        end_angle: f32,
+        rotation: f32,
+        percent: f32,
+    ) -> ShapeEntityCommands<'_, '_>;
 }
 
 impl<'w, T: ShapeSpawner<'w>> PolygonMeterSpawner<'w> for T {
-    fn ngon_meter(&mut self, sides: f32, radius: f32) -> ShapeEntityCommands<'_,'_> {
-        self.spawn_shape(ShapeBundle::ngon_meter(self.config(), sides, radius))
+    fn ngon_meter(
+        &mut self,
+        sides: f32,
+        radius: f32,
+        start_angle: f32,
+        end_angle: f32,
+        rotation: f32,
+        percent: f32,
+    ) -> ShapeEntityCommands<'_, '_> {
+        self.spawn_shape(ShapeBundle::ngon_meter(
+            self.config(),
+            sides,
+            radius,
+            start_angle,
+            end_angle,
+            rotation,
+            percent,
+        ))
     }
 }
